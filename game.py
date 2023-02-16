@@ -1,44 +1,66 @@
+import os
 import random
 import numpy as np
+from numba import jit
 
+#@profile
+def PlaceTile(board):
+    b = np.argwhere(board==0)
+    placey,placex = b[random.randrange(0, b.shape[0])]
+    board[placex][placey] = 1 if random.random() < 0.9 else 2
 
-class Game():
-    def __init__(self):
-        self.startGame()
+def CreateBoard():
+    board = np.zeros((4,4),dtype=np.uint16)
+    PlaceTile(board)
+    PlaceTile(board)
+    return board
 
-    def startGame(self):
-        self.board = np.zeros((4,4),dtype=np.uint16,order='C')
-        self.placeTile()
-        self.placeTile()
+def PrintBoard(board):
+    text = "-" * 29 + "\n"
+    for r in range(4):
+        for c in range(4):
+            text += "|{0: <6}".format("" if board[r][c] == 0 else 2**board[r][c])
+        text += "|\n" + "-" * 29 + "\n"
+    os.system("cls")
+    print(text)
 
-    def placeTile(self):
-        placey,placex = random.choice(np.argwhere(self.board==0))
-        self.board[placex][placey] = 2 if random.random() < 0.9 else 4
+"""
+Move:
+0: left
+1: up
+2: right
+3: down
+"""
+# Can be optimized by removing rotation, will likely have to
+#@jit(nopython=True)
+def ShiftBoard(board=np.array([[]]), move=0):
+    board = np.rot90(board, move)  # Temporarily rotate board depending on move direction
+    newboard = np.zeros((4, 4), dtype=np.uint16)
+    for r in range(4): # Loop each row of board
+        shiftline = board[r][np.nonzero(board[r])]  # Compress row 
+        if shiftline.size == 0: continue
+        for i in range(shiftline.size - 1): # Check for combinations
+            if shiftline[0][i] == shiftline[0][i+1]:
+                shiftline[0][i] += 1
+                shiftline[0][i+1] = 0
+        shiftline = shiftline[0, np.nonzero(shiftline[0])]  # Re compress row after potential combinations
+        newboard[r, :shiftline.shape[1]] = shiftline
 
-    def printBoard(self):
-        text = ""
-        for r in range(4):
-            for c in range(4):
-                text += "░░░" if self.board[r][c] == 0 else "█{}█".format(self.board[r][c])
-            text += "\n"
-        return text
+    newboard = np.rot90(newboard, -move) # Rotate board back
+    return newboard
+    """
+    if np.array_equal(board, newboard):
+        return False
+    else:
+        board = newboard
+        return True
+    """
 
-    def moveBoard(self):
-        #testing with left
-        for r in range(4):
-            self.board[r] = self.shiftLine(self.board[r])
-
-    def shiftLine(self,line):
-        newList = [x for x in line if x!=0]
-        if newList == []:
-            return [0,0,0,0]
-        nl = []
-        for i in range(len(newList)-1):
-            if newList[i]==newList[i+1]:
-                nl += [newList[i]*2]
-                newList[i] = 0
-                newList[i+1] = 0
-            else: nl += [newList[i]]
-        nl+=[newList[-1]]
-        nl = [x for x in nl if x!=0]
-        return nl + [0]*(4-len(nl))
+#@profile
+def MoveBoard(board, move):
+    nb = ShiftBoard(board, move)
+    if not np.array_equal(nb, board):
+        PlaceTile(nb)
+        return nb
+    else:
+        return board
