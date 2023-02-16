@@ -32,7 +32,7 @@ Move:
 3: down
 """
 # Can be optimized by removing rotation, will likely have to
-#@jit(nopython=True)
+@jit(nopython=True, cache=True)
 def ShiftBoard(board=np.array([[]]), move=0):
     board = np.rot90(board, move)  # Temporarily rotate board depending on move direction
     newboard = np.zeros((4, 4), dtype=np.uint16)
@@ -40,11 +40,11 @@ def ShiftBoard(board=np.array([[]]), move=0):
         shiftline = board[r][np.nonzero(board[r])]  # Compress row 
         if shiftline.size == 0: continue
         for i in range(shiftline.size - 1): # Check for combinations
-            if shiftline[0][i] == shiftline[0][i+1]:
-                shiftline[0][i] += 1
-                shiftline[0][i+1] = 0
-        shiftline = shiftline[0, np.nonzero(shiftline[0])]  # Re compress row after potential combinations
-        newboard[r, :shiftline.shape[1]] = shiftline
+            if shiftline[i] == shiftline[i+1]:
+                shiftline[i] += 1
+                shiftline[i+1] = 0
+        shiftline = shiftline[np.nonzero(shiftline)]  # Re compress row after potential combinations
+        newboard[r][:shiftline.size] = shiftline
 
     newboard = np.rot90(newboard, -move) # Rotate board back
     return newboard
