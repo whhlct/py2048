@@ -13,19 +13,16 @@ class Node:
 
 # Calculate score of leaf position
 # Score algorithm is currently the sum of 3^n for each element n
-
+@jit(nopython=True, cache=True)
 def CalculateLeafScore(board):
     return np.sum(3 ** board)    
 
 #@profile
 # Evaluate score from a position where it is the computer's turn
+#@jit(parallel=True)
 def CalculateScore(board, depth, max_depth):
     if (depth >= max_depth):
         return CalculateLeafScore(board)
-    global count
-    count += 1
-    #if (count % 1000 == 0):
-    #    print(f"{count} iterations")
     
     total_score = 0
     b = np.argwhere(board==0) # Get locations of all empty squares
@@ -45,16 +42,12 @@ def CalculateScore(board, depth, max_depth):
 
 #@profile
 # Evaluate value of each possible move
+#@jit(parallel=True)
 def CalculateMoveScore(board, depth, max_depth):
 
     max_score = 0
     best_move = -1
 
-    global count
-    count += 1
-    #if (count % 1000 == 0):
-    #    print(f"{count} iterations")
-    
     # Loop through all the possible moves
     for i in range(4):
         new_board = ShiftBoard(board, i)  # Calculate move

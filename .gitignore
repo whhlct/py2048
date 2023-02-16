@@ -348,9 +348,9 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
-depth4.stats
-main.py.lprof
-prof1.prof
-Untitled.ipynb
+*.stats
+*.lprof
+*.prof
+*.ipynb
 .ipynb_checkpoints/Untitled-checkpoint.ipynb
 .vscode/launch.json

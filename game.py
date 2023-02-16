@@ -64,3 +64,10 @@ def MoveBoard(board, move):
         return nb
     else:
         return board
+
+def GameOver(board):
+    for i in range(4):
+        new_board = ShiftBoard(board, i)  # Calculate move
+        if not np.array_equal(new_board, board): # Move is valid
+            return False
+    return True

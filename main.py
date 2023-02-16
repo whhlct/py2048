@@ -50,9 +50,14 @@ if __name__ == "__main__":
         """
     else:
         print("Beginning tree traversal")
-        tic = time.perf_counter()
         board = CreateBoard()
-        max_score, best_move = CalculateMoveScore(board, 0, 3)
-        print(f"Max Score: {max_score}\nBest Move: {best_move}")
-        toc = time.perf_counter()
-        print(f"Completed in {toc - tic:0.4f} seconds")
+        
+        while not GameOver(board):
+            tic = time.perf_counter()
+            _, best_move = CalculateMoveScore(board, 0, 3)
+            board = MoveBoard(board, best_move)
+            PrintBoard(board)
+            toc = time.perf_counter()
+            print(f"{toc - tic:0.4f} seconds")
+
+        print("Game Over!")
