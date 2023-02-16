@@ -1,13 +1,14 @@
 import os
 import random
 import numpy as np
+import numba
 from numba import jit
 
 #@profile
 def PlaceTile(board):
     b = np.argwhere(board==0)
     placey,placex = b[random.randrange(0, b.shape[0])]
-    board[placex][placey] = 1 if random.random() < 0.9 else 2
+    board[placey][placex] = 1 if random.random() < 0.9 else 2
 
 def CreateBoard():
     board = np.zeros((4,4),dtype=np.uint16)

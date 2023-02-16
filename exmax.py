@@ -57,4 +57,7 @@ def CalculateMoveScore(board, depth, max_depth):
                 max_score = score
                 best_move = i
 
+    if best_move == -1: # No valid moves left, terminal state
+        return CalculateLeafScore(board)
+
     return max_score, best_move
