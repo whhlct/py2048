@@ -4,6 +4,8 @@ import numpy as np
 from pynput import keyboard # couldnt find in conda :(
 from game import *
 from exmax import *
+from numpy import savetxt
+from math import log
 
 class Game:
     def __init__(self):
@@ -15,8 +17,6 @@ class Game:
     def MoveBoard(self, move):
         self.board = MoveBoard(self.board, move)
 
-"""
-"""
 def on_press(key):
     if key == keyboard.Key.esc:
         exit()
@@ -33,7 +33,6 @@ def on_press(key):
         return
     game.MoveBoard(move)
     game.PrintBoard()
-    print("bruh")
 
 
 if __name__ == "__main__":
@@ -48,14 +47,17 @@ if __name__ == "__main__":
                     on_press=on_press) as listener:
                 listener.join()
     else:
-        print("Beginning tree traversal") 
-        board = CreateBoard()
-        while not GameOver(board):
-            tic = time.perf_counter()
-            _, best_move = CalculateMoveScore(board, 0, 3)
-            board = MoveBoard(board, best_move)
-            PrintBoard(board)
-            toc = time.perf_counter()
-            print(f"{toc - tic:0.4f} seconds")
-
-        print("Game Over!")
+        for i in range(100):
+            print("Beginning tree traversal") 
+            board = CreateBoard()
+            while not GameOver(board):
+                tic = time.perf_counter()
+                depth = round(log(50000, 4 * (16 - np.count_nonzero(board)) + 4)) # Calculate depth based on number of empty squares
+                print(f"Depth: {depth}")
+                _, best_move = CalculateMoveScore(board, 0, depth)
+                board = MoveBoard(board, best_move)
+                PrintBoard(board)
+                toc = time.perf_counter()
+                print(f"{toc - tic:0.4f} seconds")
+            print("Game Over!")
+            savetxt(f'games/1_game_{i}.csv', 2**board, fmt="%d", delimiter=',')

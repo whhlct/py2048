@@ -49,13 +49,6 @@ def ShiftBoard(board=np.array([[]]), move=0):
 
     newboard = np.rot90(newboard, -move) # Rotate board back
     return newboard
-    """
-    if np.array_equal(board, newboard):
-        return False
-    else:
-        board = newboard
-        return True
-    """
 
 #@profile
 def MoveBoard(board, move):

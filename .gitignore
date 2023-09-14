@@ -352,5 +352,6 @@ MigrationBackup/
 *.lprof
 *.prof
 *.ipynb
-.ipynb_checkpoints/Untitled-checkpoint.ipynb
-.vscode/launch.json
+.ipynb_checkpoints/
+.vscode/
+games/*
